@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Progress</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            margin-top: 50px;
+        }
+        .console-output {
+            margin-top: 20px;
+            text-align: left;
+            white-space: pre-wrap;
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+            display: inline-block;
+            max-width: 100%;
+        }
+        .results-btn {
+            background-color: #00008B; /* Dark blue color */
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Processing Progress</h1>
+    {% if console_output %}
+    <div class="console-output">
+        <h3>Progress:</h3>
+        <pre>{{ console_output }}</pre>
+    </div>
+    {% endif %}
+    <form action="{{ url_for('upload') }}" method="get">
+        <button type="submit" class="results-btn">See Results</button>
+    </form>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GenArb Proof of Concept</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            margin-top: 50px;
+        }
+        h2 {
+            margin-top: 20px;
+            color: gray;
+        }
+        .upload-btn, input[type="file"] {
+            background-color: #00008B; /* Dark blue color */
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .upload-btn:disabled {
+            background-color: gray;
+            cursor: not-allowed;
+        }
+        .byline {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            font-size: 14px;
+            color: gray;
+        }
+        .console-output {
+            margin-top: 20px;
+            text-align: left;
+            white-space: pre-wrap;
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+            display: inline-block;
+            max-width: 100%;
+        }
+        .results-btn {
+            background-color: #00008B; /* Dark blue color */
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+            display: none; /* Initially hide the button */
+        }
+        .results-btn.visible {
+            display: inline-block; /* Show the button when the class is added */
+        }
+    </style>
+</head>
+<body>
+    <h1>GenArb Proof of Concept</h1>
+    <h2>Please upload an award in PDF form only</h2>
+    <form action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data" onsubmit="handleFormSubmit(event)">
+        <input type="file" name="pdf" accept="application/pdf">
+        <input type="submit" value="Upload" class="upload-btn" id="uploadBtn">
+    </form>
+    <div class="byline">- Ritwik Bhattacharya</div>
+    <div class="console-output" id="consoleOutput"></div>
+    <form action="{{ url_for('upload') }}" method="get">
+        <button type="submit" class="results-btn" id="resultsBtn">See Results</button>
+    </form>
+
+<script>
+    function disableButton() {
+        document.getElementById('uploadBtn').disabled = true;
+    }
+
+    function handleFormSubmit(event) {
+        event.preventDefault();
+        disableButton();
+        const consoleOutput = document.getElementById('consoleOutput');
+        consoleOutput.textContent = 'Processing...please wait a few minutes.\n';
+        
+
+        const formData = new FormData(event.target);
+        fetch(event.target.action, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let result = '';
+
+            function read() {
+                reader.read().then(({ done, value }) => {
+                    if (done) {
+                        consoleOutput.textContent += '\nProcessing complete.';
+                        document.getElementById('resultsBtn').classList.add('visible');
+                        return;
+                    }
+                    result += decoder.decode(value, { stream: true });
+                    const userMessages = result.split('\n').filter(line => line.startsWith('Field: ')).join('\n');
+                    consoleOutput.textContent = userMessages;
+                    read();
+                }).catch(error => {
+                    consoleOutput.textContent = 'Error during upload:\n' + error;
+                });
+            }
+
+            read();
+        })
+        .catch(error => {
+            consoleOutput.textContent = 'Error during upload:\n' + error;
+        });
+    }
+</script>
+
+</body>
+</html>

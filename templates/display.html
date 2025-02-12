@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Display Dataframe</title>
+    <style>
+        body {
+            background-color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        table.dataframe {
+            width: 80%;
+            border-collapse: collapse;
+            margin: auto;
+            border: 1px solid black; /* Add this line */
+        }
+        table.dataframe th, table.dataframe td {
+            border: 1px solid black; /* Add this line */
+            text-align: center;
+            padding: 8px;
+            white-space: pre-wrap;
+        }
+        table.dataframe th {
+            background-color: darkblue;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    {{ table | safe }}
+</body>
+</html>
